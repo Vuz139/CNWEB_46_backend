@@ -1,0 +1,4 @@
+-------Cách cài đặt database:
+-- cài đặt kết nối với database mysql
+-- chạy lệnh: npm run migration để cài đặt table lên database
+-- kiểm tra databases xem các bảng đã lên đủ chưa.

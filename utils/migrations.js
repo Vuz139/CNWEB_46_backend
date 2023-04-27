@@ -1,6 +1,7 @@
+const colors = require("colors");
 const { query } = require("../db/database");
 
-function createdUser() {
+function createdUser(opt) {
 	const sql = `CREATE TABLE users (
         id INT(11) NOT NULL AUTO_INCREMENT,
         name VARCHAR(255) NOT NULL,
@@ -12,10 +13,17 @@ function createdUser() {
         PRIMARY KEY (id)
       );
       `;
-	query(sql);
+	const sqlDown = "DROP TABLE IF EXISTS users";
+	if (opt === true) {
+		query(sql);
+		setTimeout(() => createProduct(opt), 2000);
+	} else {
+		query(sqlDown);
+		setTimeout(() => createProduct(opt), 2000);
+	}
 }
 
-function createProduct() {
+function createProduct(opt) {
 	const sql = `CREATE TABLE products (
         id INT(11) NOT NULL AUTO_INCREMENT,
         name VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ,
@@ -30,9 +38,17 @@ function createProduct() {
         PRIMARY KEY (id)
       );
       `;
-	query(sql);
+	const sqlDown = "DROP TABLE IF EXISTS products";
+
+	if (opt === true) {
+		query(sql);
+		setTimeout(() => createReviews(opt), 2000);
+	} else {
+		query(sqlDown);
+		setTimeout(() => console.log("DELETE success".green), 2000);
+	}
 }
-function createReviews() {
+function createReviews(opt) {
 	const sql = `CREATE TABLE reviews (
         id INT(11) NOT NULL AUTO_INCREMENT,
         comment TINYTEXT,
@@ -41,24 +57,39 @@ function createReviews() {
         idProduct INT(11) NOT NULL,
         createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id),
-        FOREIGN KEY (idUser) REFERENCES users(id),
-        FOREIGN KEY (idProduct) REFERENCES products(id)
+        FOREIGN KEY (idUser) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (idProduct) REFERENCES products(id) ON DELETE CASCADE
       );
       `;
-	quedry(sql);
+	const sqlDown = "DROP TABLE IF EXISTS reviews";
+
+	if (opt === true) {
+		query(sql);
+		setTimeout(() => createImageProduct(opt), 2000);
+	} else {
+		query(sqlDown);
+		setTimeout(() => createImageProduct(opt), 2000);
+	}
 }
-function createImageProduct() {
+function createImageProduct(opt) {
 	const sql = `CREATE TABLE images_product (
         id INT(11) NOT NULL AUTO_INCREMENT,
         idProduct INT(11) NOT NULL,
         path VARCHAR(255),
         PRIMARY KEY (id),
-        FOREIGN KEY (idProduct) REFERENCES products(id)
+        FOREIGN KEY (idProduct) REFERENCES products(id) ON DELETE CASCADE
       );
       `;
-	query(sql);
+	const sqlDown = "DROP TABLE IF EXISTS images_product";
+	if (opt === true) {
+		query(sql);
+		setTimeout(() => createShippingInfo(opt), 2000);
+	} else {
+		query(sqlDown);
+		setTimeout(() => createOrder(opt), 2000);
+	}
 }
-function createShippingInfo() {
+function createShippingInfo(opt) {
 	const sql = `CREATE TABLE shipping_info (
         id INT(11) NOT NULL AUTO_INCREMENT,
         address VARCHAR(255),
@@ -69,9 +100,17 @@ function createShippingInfo() {
         PRIMARY KEY (id)
       );
       `;
-	query(sql);
+	const sqlDown = "DROP TABLE IF EXISTS shipping_info";
+
+	if (opt === true) {
+		query(sql);
+		setTimeout(() => createOrder(opt), 2000);
+	} else {
+		query(sqlDown);
+		setTimeout(() => createdUser(opt), 2000);
+	}
 }
-function createOrder() {
+function createOrder(opt) {
 	const sql = `CREATE TABLE orders (
         id INT NOT NULL AUTO_INCREMENT,
         idUser INT,
@@ -86,28 +125,42 @@ function createOrder() {
         deliveredAt DATETIME,
         createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id),
-        FOREIGN KEY (idUser) REFERENCES users(id),
-        FOREIGN KEY (idShippingInfo) REFERENCES shipping_info(id)
+        FOREIGN KEY (idUser) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (idShippingInfo) REFERENCES shipping_info(id) ON DELETE CASCADE
       );
       `;
-	query(sql);
+	const sqlDown = "DROP TABLE IF EXISTS orders";
+
+	if (opt === true) {
+		query(sql);
+		setTimeout(() => createItemOrder(opt), 2000);
+	} else {
+		query(sqlDown);
+		setTimeout(() => createShippingInfo(opt), 2000);
+	}
 }
-function createItemOrder() {
+function createItemOrder(opt) {
 	const sql = `CREATE TABLE itemOrder (
         id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
         idProduct INT(11) NOT NULL,
         idOrder INT NOT NULL,
         amount INT UNSIGNED NOT NULL,
-        FOREIGN KEY (idProduct) REFERENCES products(id),
-        FOREIGN KEY (idOrder) REFERENCES orders(id)
+        FOREIGN KEY (idProduct) REFERENCES products(id) ON DELETE CASCADE,
+        FOREIGN KEY (idOrder) REFERENCES orders(id) ON DELETE CASCADE
       );
       `;
-	query(sql);
+	const sqlDown = "DROP TABLE IF EXISTS itemOrder";
+
+	if (opt === true) {
+		query(sql);
+		setTimeout(() => console.log("SUCCESSFULLY".green), 1000);
+	} else {
+		query(sqlDown);
+		setTimeout(() => createReviews(opt), 2000);
+	}
 }
-// createItemOrder();
-// // createShippingInfo();
-// // createOrder();
-// // createImageProduct();
-// // createReviews();
-// // createdUser();
-// // createProduct();
+// create tables
+createdUser(true);
+
+// delete tables
+// createItemOrder(false);
