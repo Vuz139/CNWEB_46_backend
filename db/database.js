@@ -3,7 +3,7 @@ const colors = require("colors");
 require("dotenv").config();
 
 async function query(sql, params) {
-	console.log(sql.green, (params || "Không có params").green);
+	console.log(sql.green, params || "Không có params");
 
 	const connection = await mysql.createConnection({
 		host: process.env.HOST || "localhost",
@@ -14,7 +14,7 @@ async function query(sql, params) {
 	});
 	await connection.connect();
 
-	console.log("connection established".green);
+	console.log("\nconnection established\n".green);
 	try {
 		const [rows] = await connection.execute(sql, params);
 		return rows;
