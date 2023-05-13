@@ -12,12 +12,7 @@ exports.register = async (req, res, next) => {
 		sendToken(user, 200, res);
 	} catch (err) {
 		next(new ErrorHandler(err.message, err.statusCode));
-		console.log(err);
 	}
-	// res.status(201).json({
-	//     status:'success',
-	//     data: user
-	// });
 };
 
 // login a user => api/v1/user/login
@@ -30,7 +25,9 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
 	// check if user exists
 	try {
 		const user = await User.findByEmail(email);
-		console.log(user);
+		if (!user) {
+			return next(new ErrorHandler("Invalid email or password", 401));
+		}
 		const isMatch = await user.comparePassword(password);
 
 		if (!isMatch) {
@@ -40,27 +37,21 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
 			sendToken(user, 200, res);
 		}
 	} catch (err) {
-		console.log(err);
-		res.status(400).json({
-			err,
-		});
+		return next(new ErrorHandler("Invalid email or password", 401));
 	}
 });
 
 // forgot password => api/v1/password/forgot
-
 exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
 	// todo
 });
 
 // reset password => api/v1/password/reset
-
 exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
 	// todo
 });
 
 // get current logged in user details => api/v1/me
-
 exports.getUserProfile = catchAsyncErrors(async (req, res, next) => {
 	const user = await User.findById(req.user.id);
 

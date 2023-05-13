@@ -18,8 +18,9 @@ app.get("/", async (req, res) => {
 });
 
 const authRoute = require("./routes/auth");
-
+const productRoute = require("./routes/product");
 app.use("/api/v1", authRoute);
+app.use("/api/v1", productRoute);
 
 app.use(middleError);
 

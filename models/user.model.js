@@ -78,6 +78,7 @@ class User {
 		const sql = "SELECT * FROM users WHERE email = ?";
 		const params = [email];
 		const res = await query(sql, params);
+		console.log("res", res);
 		if (res.length > 0) {
 			return new User(res[0]);
 		} else throw new ErrorHandler("User not found", 400);
