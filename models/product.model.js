@@ -46,7 +46,8 @@ class Product {
 	}
 	static async findAll() {
 		const sql = "SELECT * FROM products";
-		return await query(sql, []);
+		const res = await query(sql, []);
+		return res;
 	}
 	static async countDocuments() {
 		const sql = "SELECT COUNT(*) FROM products";
@@ -68,7 +69,7 @@ class Product {
 		// let _product = new Product(product);
 		// const currProd = await query('SELECT * FROM products WHERE id = ?', [id]);
 		// console.log(currProd[0]);
-		if (product.images) {
+		if (product.images.length > 0) {
 			for (const image of product.images) {
 				const imageSql =
 					"INSERT INTO images_product (idProduct, path) VALUES (?,?)";
@@ -110,6 +111,18 @@ class Product {
 	static async deleteReview(id) {
 		const sql = "DELETE FROM reviews WHERE id =?";
 		const params = [id];
+		return await query(sql, params);
+	}
+
+	async getImages() {
+		const sql = "SELECT * FROM images_product WHERE idProduct = ?";
+		const params = [this.id];
+		return await query(sql, params);
+	}
+
+	async addImage(path) {
+		const sql = "INSERT INTO images_product (idProduct, path) VALUES(?, ?)";
+		const params = [this.id, path];
 		return await query(sql, params);
 	}
 

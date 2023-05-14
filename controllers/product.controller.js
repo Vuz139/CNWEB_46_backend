@@ -1,16 +1,27 @@
-const { query } = require("express");
 const Product = require("../models/product.model");
 const APIFeatures = require("../utils/apiFeature");
 const catchAsyncError = require("../middlewares/catchAsyncErrors");
 
 // create a new Product => api/v1/product/create
-exports.create_product = catchAsyncError(async function (req, res, next) {
+exports.create_product = catchAsyncError(async function (req, res) {
 	await Product.create(req.body, function (product) {
 		res.status(200).json({
 			status: "success",
 			product,
 		});
 	});
+});
+exports.add_image = catchAsyncError(async function (req, res) {
+	const product = await Product.findById(req.query.productId);
+
+	if (!product.id) {
+		res.status(200).json({
+			status: "failed",
+			message: "Product not found",
+		});
+	}
+
+	res.send(await product.addImage(req.file.path));
 });
 
 //  get all products => /api/v1/products
@@ -78,7 +89,6 @@ exports.deleteProduct = async function (req, res) {
 };
 
 // create a new review Product => /api/v1/review
-
 exports.createReview = catchAsyncError(async function (req, res, next) {
 	const { rating, comment, productId } = req.body;
 
@@ -159,3 +169,9 @@ exports.deleteReview = catchAsyncError(async function (req, res) {
 		reviews,
 	});
 });
+
+// get images producct
+exports.getImages = async function (req, res) {
+	const currProd = await Product.findById(req.params.id);
+	res.send(await currProd.getImages());
+};
