@@ -1,5 +1,7 @@
 const { query } = require("../db/database");
-
+const fs = require("fs");
+const path = require("path");
+const { join, dirname } = require("path");
 class Product {
 	constructor(product) {
 		this.id = product.id || null;
@@ -66,41 +68,27 @@ class Product {
 		return new Product(prod);
 	}
 	static async findByIdAndUpdate(id, product) {
-		// let _product = new Product(product);
-		// const currProd = await query('SELECT * FROM products WHERE id = ?', [id]);
-		// console.log(currProd[0]);
-		if (product.images.length > 0) {
-			for (const image of product.images) {
-				const imageSql =
-					"INSERT INTO images_product (idProduct, path) VALUES (?,?)";
-				const imageParams = [id, image.url];
-				await query(imageSql, imageParams);
-			}
-			delete product.images;
-		}
+		const sql = "SELECT * FROM products WHERE id = ?";
+		const prod = (await query(sql, [id]))[0];
 
-		// console.log(product);
-
-		let sql = "UPDATE products SET ";
-		let params = [];
-
-		for (const key in product) {
-			// if(key == 'image' || key == 'reviews') continue;
-			// sql += '? = ? , ';
-			sql += ` ${key} = "${product[key]}" , `;
-			params.push(key, product[key]);
-		}
-
-		sql = sql.substring(0, sql.length - 2);
-		sql += ` WHERE id = ${id}`;
-		params.push(id);
-		// console.log(sql);
-		// const sql = 'UPDATE products SET name =?, description =?, category =?, price =?, ratings =?, seller =?, stock =?, numOfRev =? WHERE id =?';
-		// const params = [_product.name, _product.description, _product.category, _product.price, _product.ratings, _product.seller, _product.stock, _product.numOfReviews, id];
-
-		await query(sql, []);
-		const prods = await query("SELECT * FROM products WHERE id = ?", [id]);
-		return prods[0];
+		const updatedProduct = {
+			...prod,
+			...product,
+		};
+		const sqlUpdate =
+			"UPDATE products SET name = ?, description = ?, category = ?, price = ?, ratings = ?, seller = ? , stock = ?, numOfRev = ? WHERE id = ?";
+		const params = [
+			updatedProduct.name,
+			updatedProduct.description,
+			updatedProduct.category,
+			updatedProduct.price,
+			updatedProduct.ratings,
+			updatedProduct.seller,
+			updatedProduct.stock,
+			updatedProduct.numOfRev,
+			updatedProduct.id,
+		];
+		return await query(sqlUpdate, params);
 	}
 	static async getReviews(id) {
 		const sql = "SELECT * FROM reviews WHERE idProduct = ?";
@@ -117,12 +105,47 @@ class Product {
 	async getImages() {
 		const sql = "SELECT * FROM images_product WHERE idProduct = ?";
 		const params = [this.id];
-		return await query(sql, params);
+		const res = await query(sql, params);
+		const imgs = res.map((img) => {
+			const newPath = join(dirname(__dirname), "uploads/", img.path);
+
+			return {
+				...img,
+				path: newPath,
+			};
+		});
+		return imgs;
 	}
 
 	async addImage(path) {
 		const sql = "INSERT INTO images_product (idProduct, path) VALUES(?, ?)";
 		const params = [this.id, path];
+		return await query(sql, params);
+	}
+
+	static async removeImage(id) {
+		const curImg = (
+			await query("select path from images_product where id= ?", id)
+		)[0];
+
+		const filePath = path.join(__dirname, "../uploads", curImg.path);
+
+		if (fs.existsSync(filePath)) {
+			// Delete the file
+			fs.unlink(filePath, (err) => {
+				if (err) {
+					console.error(err);
+					return;
+				}
+
+				console.log("File deleted successfully");
+			});
+		} else {
+			console.log("File does not exist");
+		}
+
+		const sql = "DELETE FROm images_product WHERE id = ?";
+		const params = [id];
 		return await query(sql, params);
 	}
 

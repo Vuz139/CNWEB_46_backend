@@ -12,6 +12,7 @@ const {
 	getReviews,
 	add_image,
 	deleteReview,
+	removeImage,
 	getImages,
 } = require("../controllers/product.controller");
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
@@ -25,6 +26,7 @@ router.delete("/product/:id", deleteProduct);
 
 router.post("/product/image", upload.single("file"), add_image);
 router.get("/product/:id/image/", getImages);
+router.delete("/product/image/:id", removeImage);
 
 router.get("/reviews", isAuthenticatedUser, getReviews);
 router.post("/review", isAuthenticatedUser, createReview);

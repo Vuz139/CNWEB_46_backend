@@ -20,8 +20,7 @@ exports.add_image = catchAsyncError(async function (req, res) {
 			message: "Product not found",
 		});
 	}
-
-	res.send(await product.addImage(req.file.path));
+	res.send(await product.addImage(req.file.filename));
 });
 
 //  get all products => /api/v1/products
@@ -58,15 +57,16 @@ exports.getSingleProduct = catchAsyncError(async function (req, res, next) {
 
 // update product => /api/v1/admin/product/:id
 
-exports.updateProduct = catchAsyncError(async function (req, res, next) {
+exports.updateProduct = catchAsyncError(async function (req, res) {
 	const product = await Product.findByIdAndUpdate(req.params.id, req.body);
+	console.log(product);
 	if (!product) {
 		return res.status(404).json({
 			status: "error",
 			message: "Product not found",
 		});
 	}
-	console.log(product);
+
 	res.status(200).json({
 		status: "success",
 		product,
@@ -174,4 +174,7 @@ exports.deleteReview = catchAsyncError(async function (req, res) {
 exports.getImages = async function (req, res) {
 	const currProd = await Product.findById(req.params.id);
 	res.send(await currProd.getImages());
+};
+exports.removeImage = async function (req, res) {
+	res.send(await Product.removeImage(req.params.id));
 };
