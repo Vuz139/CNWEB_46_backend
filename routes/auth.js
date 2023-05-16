@@ -12,11 +12,14 @@ const {
 	getUsers,
 	getUserById,
 	deleteUserById,
+	updateAvatar,
 	updateUser,
 } = require("../controllers/user.controller");
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
+const { upload } = require("../middlewares/multer.config");
 
 router.post("/user/register", register);
+router.post("user/avatar", upload.single("file"), updateAvatar);
 router.post("/user/login", loginUser);
 
 router.get("/me", isAuthenticatedUser, getUserProfile);

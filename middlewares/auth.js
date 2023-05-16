@@ -6,7 +6,10 @@ const User = require("../models/user.model");
 
 // check if user is authenticated or not
 exports.isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
-	const { token } = req.cookies;
+	const token =
+		req.rawHeaders[req.rawHeaders.indexOf("Authorization") + 1].split(
+			" ",
+		)[1];
 
 	if (!token) {
 		return next(
@@ -15,6 +18,7 @@ exports.isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
 	}
 	// get userId by token
 	const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
 	req.user = await User.findById(decoded.id);
 	next();
 });

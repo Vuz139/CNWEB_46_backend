@@ -30,8 +30,14 @@ class User {
 			// cập nhật email, name, ...
 
 			const sql =
-				"UPDATE users SET name =?, email =?, role = ? WHERE id =?";
-			const params = [this.name, this.email, this.role, this.id];
+				"UPDATE users SET name =?, email =?, role = ?, avatar = ? WHERE id =?";
+			const params = [
+				this.name || currProile.name,
+				this.email || currProile.email,
+				this.role,
+				this.avatar || currProile.avatar,
+				this.id,
+			];
 			const res = await query(sql, params);
 			return res;
 		}
@@ -44,7 +50,7 @@ class User {
 				400,
 			);
 		}
-		if (this.name.length > 30) {
+		if (this.name.length > 40) {
 			throw new ErrorHandler("Name is too long.", 400);
 		}
 		if (this.password.length > 30 || this.password.length < 6) {
@@ -70,7 +76,7 @@ class User {
 				res.insertId,
 			]);
 		} catch (err) {
-			throw err;
+			console.log(err);
 		}
 	}
 
@@ -78,7 +84,7 @@ class User {
 		const sql = "SELECT * FROM users WHERE email = ?";
 		const params = [email];
 		const res = await query(sql, params);
-		console.log("res", res);
+
 		if (res.length > 0) {
 			return new User(res[0]);
 		} else throw new ErrorHandler("User not found", 400);

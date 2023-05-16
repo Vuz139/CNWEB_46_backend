@@ -41,15 +41,21 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
 	}
 });
 
-// forgot password => api/v1/password/forgot
-exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
-	// todo
+exports.updateAvatar = catchAsyncErrors(async (req, res) => {
+	const path = req.file.path;
+	req.user.avatar = path;
+	res.send(await req.user.update());
 });
 
-// reset password => api/v1/password/reset
-exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
-	// todo
-});
+// // forgot password => api/v1/password/forgot
+// exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
+// 	// todo
+// });
+
+// // reset password => api/v1/password/reset
+// exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
+// 	// todo
+// });
 
 // get current logged in user details => api/v1/me
 exports.getUserProfile = catchAsyncErrors(async (req, res, next) => {
@@ -62,7 +68,6 @@ exports.getUserProfile = catchAsyncErrors(async (req, res, next) => {
 });
 
 // Update / Change password for current user => api/v1/password/update
-
 exports.updatePassword = catchAsyncErrors(async (req, res, next) => {
 	const user = await User.findById(req.user.id);
 
@@ -78,7 +83,6 @@ exports.updatePassword = catchAsyncErrors(async (req, res, next) => {
 });
 
 //  update user profile => /api/v1/me/update
-
 exports.updateUserProfile = catchAsyncErrors(async (req, res, next) => {
 	const user = new User(req.user);
 	// console.log(req.user);
@@ -95,7 +99,6 @@ exports.updateUserProfile = catchAsyncErrors(async (req, res, next) => {
 });
 
 // logout user => /api/v1/logout
-
 exports.logoutUser = catchAsyncErrors(async (req, res, next) => {
 	res.cookie("token", "none", {
 		expires: new Date(Date.now() + 10 * 1000),
@@ -109,9 +112,7 @@ exports.logoutUser = catchAsyncErrors(async (req, res, next) => {
 });
 
 // admin routers
-
 //  get all users => api/v1/admin/users
-
 exports.getUsers = catchAsyncErrors(async (req, res, next) => {
 	const users = await User.find();
 
@@ -122,7 +123,6 @@ exports.getUsers = catchAsyncErrors(async (req, res, next) => {
 });
 
 // get user by id => api/v1/admin/user/:id
-
 exports.getUserById = catchAsyncErrors(async (req, res, next) => {
 	const user = await User.findById(req.params.id);
 
@@ -137,7 +137,6 @@ exports.getUserById = catchAsyncErrors(async (req, res, next) => {
 });
 
 // delete user by id => api/v1/admin/user/:id
-
 exports.deleteUserById = catchAsyncErrors(async (req, res, next) => {
 	const user = await User.findById(req.params.id);
 
@@ -155,7 +154,6 @@ exports.deleteUserById = catchAsyncErrors(async (req, res, next) => {
 });
 
 // update user => /api/v1/admin/user/:id
-
 exports.updateUser = catchAsyncErrors(async (req, res, next) => {
 	const user = await User.findById(req.params.id);
 
