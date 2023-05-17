@@ -15,8 +15,8 @@ const {
 	removeImage,
 	getImages,
 } = require("../controllers/product.controller");
-const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
-const { upload } = require("../middlewares/multer.config");
+const { isAuthenticatedUser, authorizeRoles } = require("../middleWares/auth");
+const { upload } = require("../middleWares/multer.config");
 
 router.post("/product", create_product);
 router.get("/products", getProducts);

@@ -1,6 +1,6 @@
 const Product = require("../models/product.model");
 const APIFeatures = require("../utils/apiFeature");
-const catchAsyncError = require("../middlewares/catchAsyncErrors");
+const catchAsyncError = require("../middleWares/catchAsyncErrors");
 
 // create a new Product => api/v1/product/create
 exports.create_product = catchAsyncError(async function (req, res) {
@@ -101,9 +101,9 @@ exports.createReview = catchAsyncError(async function (req, res, next) {
 
 	const product = await Product.findById(productId);
 
-	const isReviewd = product.reviews.find((r) => r.userId === req.user.id);
+	const isReviewed = product.reviews.find((r) => r.userId === req.user.id);
 
-	if (isReviewd) {
+	if (isReviewed) {
 		product.reviews.forEach((rev) => {
 			if (rev.userId === req.user.id) {
 				rev.comment = comment;

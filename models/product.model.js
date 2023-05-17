@@ -9,11 +9,11 @@ class Product {
 		this.price = Number(product.price) || 0.0;
 		this.description = product.description || " ";
 		this.ratings = product.ratings || 0.0;
-		this.images = product.images || [];
 		this.category = product.category;
 		this.seller = product.seller || "unknown";
 		this.stock = product.stock || 0;
 		this.numOfReviews = product.numOfReviews || 0;
+		this.images = product.images || [];
 		this.reviews = product.reviews || [];
 	}
 
