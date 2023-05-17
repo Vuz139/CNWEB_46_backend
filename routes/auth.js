@@ -15,11 +15,16 @@ const {
 	updateAvatar,
 	updateUser,
 } = require("../controllers/user.controller");
-const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
-const { upload } = require("../middlewares/multer.config");
+const { isAuthenticatedUser, authorizeRoles } = require("../middleWares/auth");
+const { upload } = require("../middleWares/multer.config");
 
 router.post("/user/register", register);
-router.post("user/avatar", upload.single("file"), updateAvatar);
+router.post(
+	"/user/avatar",
+	isAuthenticatedUser,
+	upload.single("file"),
+	updateAvatar,
+);
 router.post("/user/login", loginUser);
 
 router.get("/me", isAuthenticatedUser, getUserProfile);

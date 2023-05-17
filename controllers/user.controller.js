@@ -7,11 +7,15 @@ const sendToken = require("../utils/jwtToken");
 exports.register = async (req, res, next) => {
 	const user = new User(req.body);
 	try {
-		await user.save();
+		const getUser = new User(await user.save());
+		console.log("gestUser: ", getUser);
 		user.password = "none";
-		sendToken(user, 200, res);
+		sendToken(getUser, 200, res);
 	} catch (err) {
-		next(new ErrorHandler(err.message, err.statusCode));
+		res.status(400).send({
+			err: "Not success",
+		});
+		// next(new ErrorHandler(err.message, err.statusCode));
 	}
 };
 
@@ -41,8 +45,9 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
 	}
 });
 
+// add avatar user
 exports.updateAvatar = catchAsyncErrors(async (req, res) => {
-	const path = req.file.path;
+	const path = req.file.filename;
 	req.user.avatar = path;
 	res.send(await req.user.update());
 });
@@ -99,7 +104,7 @@ exports.updateUserProfile = catchAsyncErrors(async (req, res, next) => {
 });
 
 // logout user => /api/v1/logout
-exports.logoutUser = catchAsyncErrors(async (req, res, next) => {
+exports.logoutUser = catchAsyncErrors(async (req, res) => {
 	res.cookie("token", "none", {
 		expires: new Date(Date.now() + 10 * 1000),
 		httpOnly: true,
@@ -113,11 +118,13 @@ exports.logoutUser = catchAsyncErrors(async (req, res, next) => {
 
 // admin routers
 //  get all users => api/v1/admin/users
-exports.getUsers = catchAsyncErrors(async (req, res, next) => {
-	const users = await User.find();
+exports.getUsers = catchAsyncErrors(async (req, res) => {
+	const users = await User.find(req.query);
 
 	res.status(200).json({
 		status: "success",
+		take: query.take || 10,
+		skip: query.skip || 0,
 		users,
 	});
 });
@@ -156,10 +163,6 @@ exports.deleteUserById = catchAsyncErrors(async (req, res, next) => {
 // update user => /api/v1/admin/user/:id
 exports.updateUser = catchAsyncErrors(async (req, res, next) => {
 	const user = await User.findById(req.params.id);
-
-	// if (!user) {
-	//     return next(new ErrorHandler('User not found', 404));
-	// }
 
 	user.name = req.body.name || user.name;
 	user.email = req.body.email || user.email;

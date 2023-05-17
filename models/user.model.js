@@ -53,16 +53,16 @@ class User {
 		if (this.name.length > 40) {
 			throw new ErrorHandler("Name is too long.", 400);
 		}
-		if (this.password.length > 30 || this.password.length < 6) {
-			throw new ErrorHandler("Password is too long or too short.", 400);
-		}
+		// if (this.password.length > 30 || this.password.length < 6) {
+		// 	throw new ErrorHandler("Password is too long or too short.", 400);
+		// }
 		if (!/\S+@\S+\.\S+/.test(this.email)) {
 			throw new ErrorHandler("Email is not valid.", 400);
 		}
 		const checkExist = await query("SELECT * FROM users WHERE email = ?", [
 			this.email,
 		]);
-		if (checkExist.length) {
+		if (checkExist.length > 0) {
 			throw new ErrorHandler("Email is already in use.", 400);
 		}
 		try {
@@ -72,9 +72,9 @@ class User {
 				[this.name, this.email, this.password, this.role, this.avatar],
 			);
 
-			return await query("SELECT * FROM users WHERE id = ? ", [
-				res.insertId,
-			]);
+			return (
+				await query("SELECT * FROM users WHERE id = ? ", [res.insertId])
+			)[0];
 		} catch (err) {
 			console.log(err);
 		}
@@ -98,10 +98,10 @@ class User {
 		} else throw new ErrorHandler("User not found", 400);
 	}
 
-	static async find() {
-		const sql = "SELECT * FROM users";
-
-		const res = await query(sql, []);
+	static async find({ take = 10, skip = 0 }) {
+		const sql = "SELECT * FROM users ORDERBY id DESC OFFSET ? LIMIT ? ";
+		const params = [skip, take];
+		const res = await query(sql, params);
 		if (res.length > 0) {
 			return res;
 		} else throw new ErrorHandler("User not found", 400);
@@ -120,11 +120,8 @@ class User {
 
 	getJwtToken() {
 		return jwt.sign({ id: this.id }, process.env.JWT_SECRET, {
-			expiresIn: process.env.JWT_EXPRIES_IN,
+			expiresIn: process.env.JWT_EXPIRES_IN,
 		});
-	}
-	generatPasswodResetToken() {
-		// todo
 	}
 }
 
