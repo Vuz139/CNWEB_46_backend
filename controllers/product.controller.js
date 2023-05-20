@@ -25,15 +25,17 @@ exports.add_image = catchAsyncError(async function (req, res) {
 
 //  get all products => /api/v1/products
 exports.getProducts = catchAsyncError(async function (req, res) {
-	const resPerPage = req.query.take || 100;
+	const take = Number(req.query.take) || 10;
+	const page = Number(req.query.page) || 1;
 	const productsCount = await Product.countDocuments();
 	const products = new APIFeatures(await Product.findAll(), req.query)
 		.search()
 		.filter()
-		.pagination(resPerPage);
+		.pagination(take);
 	res.status(200).json({
 		status: "success",
-		count: products.query.length,
+		take,
+		page,
 		total: productsCount[0]["COUNT(*)"],
 		products: products.query,
 	});

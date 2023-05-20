@@ -30,7 +30,7 @@ class APIFeatures {
 
 	filter() {
 		const queryCopy = { ...this.queryStr };
-
+		console.log("queryCopy", queryCopy);
 		// Removing fields from the query
 		const removeFields = ["keyword", "limit", "page"];
 		removeFields.forEach((param) => delete queryCopy[param]);
@@ -55,15 +55,15 @@ class APIFeatures {
 						check &&
 						Number(copyQuery[index][key]) >
 							Number(queryCopy[key].gt);
-					if (!check) {
-						copyQuery.splice(index, 1);
-						index--;
-					}
 				} else if (queryCopy[key].lt) {
 					check =
 						check &&
 						Number(copyQuery[index][key]) <
 							Number(queryCopy[key].lt);
+				}
+				if (!check) {
+					copyQuery.splice(index, 1);
+					index--;
 				}
 			}
 		}

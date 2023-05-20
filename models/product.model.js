@@ -26,29 +26,28 @@ class Product {
 			seeder.description,
 			seeder.category,
 			seeder.price,
-			seeder.ratings,
+			0,
 			seeder.seller,
 			seeder.stock,
-			seeder.numOfReviews,
+			0,
 		];
 
 		const res = await query(sql, params);
 		const id = res.insertId;
-
-		if (seeder.images.length > 0) {
-			for (const image of seeder.images) {
-				const imageSql =
-					"INSERT INTO images_product (idProduct, path) VALUES (?, ?)";
-				const imageParams = [id, image.url];
-				await query(imageSql, imageParams);
-			}
-		}
 		seeder.id = id;
 		result(seeder);
 	}
 	static async findAll() {
 		const sql = "SELECT * FROM products";
 		const res = await query(sql, []);
+
+		for (let i = 0; i < res.length; i++) {
+			const sql = "SELECT * FROM images_product WHERE idProduct = ?";
+			const params = [res[i].id];
+			res[i].images = await query(sql, params);
+			console.log("Image:  ", res[i].id, res[i].images);
+		}
+		console.log(res);
 		return res;
 	}
 	static async countDocuments() {
@@ -106,15 +105,15 @@ class Product {
 		const sql = "SELECT * FROM images_product WHERE idProduct = ?";
 		const params = [this.id];
 		const res = await query(sql, params);
-		const imgs = res.map((img) => {
-			const newPath = join(dirname(__dirname), "uploads/", img.path);
+		// const imgs = res.map((img) => {
+		// 	const newPath = join(dirname(__dirname), "uploads/", img.path);
 
-			return {
-				...img,
-				path: newPath,
-			};
-		});
-		return imgs;
+		// 	return {
+		// 		...img,
+		// 		path: newPath,
+		// 	};
+		// });
+		return res;
 	}
 
 	async addImage(path) {
@@ -144,7 +143,7 @@ class Product {
 			console.log("File does not exist");
 		}
 
-		const sql = "DELETE FROm images_product WHERE id = ?";
+		const sql = "DELETE FROM images_product WHERE id = ?";
 		const params = [id];
 		return await query(sql, params);
 	}

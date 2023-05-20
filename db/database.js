@@ -2,6 +2,17 @@ const mysql = require("mysql2/promise");
 const colors = require("colors");
 require("dotenv").config();
 
+// const pool = mysql.createPool({
+// 	host: process.env.HOST || "localhost",
+// 	user: process.env.USER || "root",
+// 	password: process.env.PASSWORD || "",
+// 	namedPlaceholders: true,
+// 	database: process.env.DATABASE || "cnweb46",
+// 	waitForConnections: true,
+// 	connectionLimit: 10,
+// 	queueLimit: 0,
+// });
+
 async function query(sql, params) {
 	console.log(sql.green, params || "Không có params");
 

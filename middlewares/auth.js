@@ -1,31 +1,31 @@
 const jwt = require("jsonwebtoken");
 
-const catchAsyncErrors = require("./catchAsyncErrors");
+const newLocal = "./catchAsyncErrors";
+const catchErrors = require(newLocal);
 const ErrorHandler = require("../utils/errorHandler");
 const User = require("../models/user.model");
 
 // check if user is authenticated or not
-exports.isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
+exports.isAuthenticatedUser = catchErrors(async (req, res, next) => {
 	const token =
 		req.rawHeaders[req.rawHeaders.indexOf("Authorization") + 1].split(
 			" ",
 		)[1];
-
 	if (!token) {
 		return next(
 			new ErrorHandler("Login first to access this resource.", 401),
 		);
 	}
 	// get userId by token
-	const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+	const decoded = jwt.verify(token, process.env.JWT_SECRET);
 	req.user = await User.findById(decoded.id);
 	next();
 });
 
 // Handling users roles
 exports.authorizeRoles = (...roles) =>
-	catchAsyncErrors(async (req, res, next) => {
+	catchErrors(async (req, res, next) => {
 		if (!roles.includes(req.user.role)) {
 			return next(
 				new ErrorHandler(

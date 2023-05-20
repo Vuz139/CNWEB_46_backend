@@ -8,8 +8,8 @@ exports.register = async (req, res, next) => {
 	const user = new User(req.body);
 	try {
 		const getUser = new User(await user.save());
-		console.log("gestUser: ", getUser);
-		user.password = "none";
+
+		delete user.password;
 		sendToken(getUser, 200, res);
 	} catch (err) {
 		res.status(400).send({
@@ -37,7 +37,7 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
 		if (!isMatch) {
 			return next(new ErrorHandler("Invalid email or password", 401));
 		} else {
-			user.password = "none";
+			delete user.password;
 			sendToken(user, 200, res);
 		}
 	} catch (err) {
