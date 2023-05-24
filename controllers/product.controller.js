@@ -28,7 +28,10 @@ exports.getProducts = catchAsyncError(async function (req, res) {
 	const take = Number(req.query.take) || 10;
 	const page = Number(req.query.page) || 1;
 	const productsCount = await Product.countDocuments();
-	const products = new APIFeatures(await Product.findAll(), req.query)
+	const orderBy = req.query.orderBy;
+	const array = orderBy.slice(1, orderBy.length - 1).split(",");
+
+	const products = new APIFeatures(await Product.findAll(array), req.query)
 		.search()
 		.filter()
 		.pagination(take);

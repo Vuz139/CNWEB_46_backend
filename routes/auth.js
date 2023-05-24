@@ -12,6 +12,7 @@ const {
 	getUsers,
 	getUserById,
 	deleteUserById,
+	updateUserProfileById,
 	updateAvatar,
 	updateUser,
 } = require("../controllers/user.controller");
@@ -34,8 +35,8 @@ router.get("/logout", isAuthenticatedUser, logoutUser);
 
 router.get(
 	"/admin/users",
-	isAuthenticatedUser,
-	authorizeRoles("admin"),
+	// isAuthenticatedUser,
+	// authorizeRoles("admin"),
 	getUsers,
 );
 router.get(
@@ -44,16 +45,17 @@ router.get(
 	authorizeRoles("admin"),
 	getUserById,
 );
+
 router.delete(
 	"/admin/user/:id",
 	isAuthenticatedUser,
 	authorizeRoles("admin"),
 	deleteUserById,
 );
-router.post(
+router.put(
 	"/admin/user/:id",
-	isAuthenticatedUser,
-	authorizeRoles("admin"),
+	// isAuthenticatedUser,
+	// authorizeRoles("admin"),
 	updateUser,
 );
 

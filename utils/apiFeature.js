@@ -30,40 +30,46 @@ class APIFeatures {
 
 	filter() {
 		const queryCopy = { ...this.queryStr };
-		console.log("queryCopy", queryCopy);
+
 		// Removing fields from the query
-		const removeFields = ["keyword", "limit", "page"];
+		const removeFields = ["keyword", "limit", "take", "page", "orderBy"];
 		removeFields.forEach((param) => delete queryCopy[param]);
 		let copyQuery = [...this.query];
-		// console.log(copyQuery);
+		console.log(("queryCopy", queryCopy));
+		// console.log("copyQuery", copyQuery);
 
 		for (let index = 0; index < copyQuery.length; index++) {
 			for (const key in queryCopy) {
 				let check = true;
-				if (queryCopy[key].gte) {
+
+				if (queryCopy[key] && queryCopy[key].gte) {
 					check =
 						check &&
 						Number(copyQuery[index][key]) >=
 							Number(queryCopy[key].gte);
-				} else if (queryCopy[key].lte) {
+				} else if (queryCopy[key] && queryCopy[key].lte) {
 					check =
 						check &&
 						Number(copyQuery[index][key]) <=
 							Number(queryCopy[key].lte);
-				} else if (queryCopy[key].gt) {
+				} else if (queryCopy[key] && queryCopy[key].gt) {
 					check =
 						check &&
 						Number(copyQuery[index][key]) >
 							Number(queryCopy[key].gt);
-				} else if (queryCopy[key].lt) {
+				} else if (queryCopy[key] && queryCopy[key].lt) {
 					check =
 						check &&
 						Number(copyQuery[index][key]) <
 							Number(queryCopy[key].lt);
+				} else {
+					check =
+						check && copyQuery[index][key].includes(queryCopy[key]);
 				}
 				if (!check) {
 					copyQuery.splice(index, 1);
 					index--;
+					break;
 				}
 			}
 		}

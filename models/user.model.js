@@ -97,14 +97,28 @@ class User {
 			return new User(res[0]);
 		} else throw new ErrorHandler("User not found", 400);
 	}
-
-	static async find({ take = 10, skip = 0 }) {
-		const sql = "SELECT * FROM users ORDERBY id DESC OFFSET ? LIMIT ? ";
-		const params = [skip, take];
+	static async count() {
+		const sql = "SELECT count(*) AS total FROM users ";
+		return (await query(sql, []))[0].total;
+	}
+	static async find({
+		take = 10,
+		skip = 0,
+		orderBy = ["id", "desc"],
+		keyword = "",
+	}) {
+		const search = `%${keyword.trim().replace(/ +/g, "%")}%`;
+		console.log(">>>search: ", search);
+		const sql = `SELECT * FROM users
+					WHERE (role LIKE ? OR name LIKE ?)
+					ORDER BY ${orderBy[0]} ${orderBy[1]} 
+					LIMIT ? OFFSET ? 
+				
+					`;
+		const params = [search, search, take, skip];
 		const res = await query(sql, params);
-		if (res.length > 0) {
-			return res;
-		} else throw new ErrorHandler("User not found", 400);
+
+		return res;
 	}
 
 	async remove() {

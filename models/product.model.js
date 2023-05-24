@@ -37,8 +37,12 @@ class Product {
 		seeder.id = id;
 		result(seeder);
 	}
-	static async findAll() {
-		const sql = "SELECT * FROM products";
+	static async findAll(orderBy = null) {
+		const sql = `SELECT * FROM products ${
+			orderBy ? `ORDER BY ${orderBy[0]} ${orderBy[1]}` : ""
+		} `;
+		console.log((">>>>check order: ", orderBy));
+
 		const res = await query(sql, []);
 
 		for (let i = 0; i < res.length; i++) {
@@ -47,7 +51,7 @@ class Product {
 			res[i].images = await query(sql, params);
 			console.log("Image:  ", res[i].id, res[i].images);
 		}
-		console.log(res);
+		// console.log(res);
 		return res;
 	}
 	static async countDocuments() {
@@ -105,14 +109,6 @@ class Product {
 		const sql = "SELECT * FROM images_product WHERE idProduct = ?";
 		const params = [this.id];
 		const res = await query(sql, params);
-		// const imgs = res.map((img) => {
-		// 	const newPath = join(dirname(__dirname), "uploads/", img.path);
-
-		// 	return {
-		// 		...img,
-		// 		path: newPath,
-		// 	};
-		// });
 		return res;
 	}
 

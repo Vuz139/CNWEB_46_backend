@@ -119,14 +119,27 @@ exports.logoutUser = catchAsyncErrors(async (req, res) => {
 // admin routers
 //  get all users => api/v1/admin/users
 exports.getUsers = catchAsyncErrors(async (req, res) => {
-	const users = await User.find(req.query);
+	try {
+		const { take, skip, keyword, orderBy } = req.query;
+		const order = orderBy && orderBy.split(",");
+		const users = await User.find({
+			take,
+			skip,
+			keyword,
+			orderBy: orderBy && order,
+		});
+		const total = await User.count();
+		res.status(200).send({
+			status: "success",
+			total,
+			take: req.query.take || 10,
+			skip: req.query.skip || 0,
 
-	res.status(200).json({
-		status: "success",
-		take: query.take || 10,
-		skip: query.skip || 0,
-		users,
-	});
+			users,
+		});
+	} catch (error) {
+		res.send({ message: error.message });
+	}
 });
 
 // get user by id => api/v1/admin/user/:id
