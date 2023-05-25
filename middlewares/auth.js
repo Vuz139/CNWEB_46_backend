@@ -16,11 +16,17 @@ exports.isAuthenticatedUser = catchErrors(async (req, res, next) => {
 			new ErrorHandler("Login first to access this resource.", 401),
 		);
 	}
-	// get userId by token
+	console.log("token", token);
 
-	const decoded = jwt.verify(token, process.env.JWT_SECRET);
-	req.user = await User.findById(decoded.id);
-	next();
+	// get userId by token
+	try {
+		const decoded = jwt.verify(token, process.env.JWT_SECRET);
+		req.user = await User.findById(decoded.id);
+		next();
+	} catch (err) {
+		console.log(err);
+		res.send(err);
+	}
 });
 
 // Handling users roles

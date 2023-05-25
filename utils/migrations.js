@@ -121,7 +121,7 @@ function createOrder(opt) {
         shippingPrice DECIMAL(13, 2),
         totalPrice DECIMAL(13, 2),
         paidAt DATETIME,
-        orderStatus ENUM('pending', 'processing', 'fullfiled'),
+        orderStatus ENUM('pending', 'processing', 'fullfiled', 'cancelled'),
         deliveredAt DATETIME,
         createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id),

@@ -69,7 +69,7 @@ exports.getProductTop = catchAsyncError(async function (req, res) {
 // get single product => /api/v1/product/:id
 exports.getSingleProduct = catchAsyncError(async function (req, res, next) {
 	const product = await Product.findById(req.params.id);
-	console.log(product);
+	// console.log(product);
 	if (!product) {
 		return res.status(404).json({
 			status: "error",
