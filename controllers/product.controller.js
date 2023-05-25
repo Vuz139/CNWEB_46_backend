@@ -1,6 +1,7 @@
 const Product = require("../models/product.model");
 const APIFeatures = require("../utils/apiFeature");
 const catchAsyncError = require("../middleWares/catchAsyncErrors");
+const { query } = require("../db/database");
 
 // create a new Product => api/v1/product/create
 exports.create_product = catchAsyncError(async function (req, res) {
@@ -41,6 +42,27 @@ exports.getProducts = catchAsyncError(async function (req, res) {
 		page,
 		total: productsCount[0]["COUNT(*)"],
 		products: products.query,
+	});
+});
+
+exports.getProductTop = catchAsyncError(async function (req, res) {
+	const sqlCategory = "SELECT category FROM products GROUP BY category";
+	const category = (await query(sqlCategory, [])).map(
+		(category) => category.category,
+	);
+	const sqlPrice = "SELECT price FROM products order by price DESC LIMIT 1";
+	const price = (await query(sqlPrice, []))[0].price;
+
+	const sqlSeller = "SELECT seller from products group by seller";
+	const seller = (await query(sqlSeller, [])).map((seller) => seller.seller);
+
+	res.status(200).json({
+		status: "success",
+		data: {
+			category,
+			price,
+			seller,
+		},
 	});
 });
 

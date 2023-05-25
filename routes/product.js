@@ -14,12 +14,14 @@ const {
 	deleteReview,
 	removeImage,
 	getImages,
+	getProductTop,
 } = require("../controllers/product.controller");
 const { isAuthenticatedUser, authorizeRoles } = require("../middleWares/auth");
 const { upload } = require("../middleWares/multer.config");
 
 router.post("/product", create_product);
 router.get("/products", getProducts);
+router.get("/product/max", getProductTop);
 router.get("/product/:id", getSingleProduct);
 router.put("/product/:id", updateProduct);
 router.delete("/product/:id", deleteProduct);
