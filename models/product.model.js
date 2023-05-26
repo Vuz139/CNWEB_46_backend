@@ -2,6 +2,7 @@ const { query } = require("../db/database");
 const fs = require("fs");
 const path = require("path");
 const { join, dirname } = require("path");
+const User = require("./user.model");
 class Product {
 	constructor(product) {
 		this.id = product.id || null;
@@ -12,7 +13,7 @@ class Product {
 		this.category = product.category;
 		this.seller = product.seller || "unknown";
 		this.stock = product.stock || 0;
-		this.numOfReviews = product.numOfReviews || 0;
+		this.numOfRev = product.numOfRev || 0;
 		this.images = product.images || [];
 		this.reviews = product.reviews || [];
 	}
@@ -37,11 +38,11 @@ class Product {
 		seeder.id = id;
 		result(seeder);
 	}
-	static async findAll(orderBy = null) {
+	static async findAll({ orderBy = null, take = 10, skip = 0 }) {
+		console.log((">>>>check order: ", orderBy));
 		const sql = `SELECT * FROM products ${
 			orderBy ? `ORDER BY ${orderBy[0]} ${orderBy[1]}` : ""
-		} `;
-		console.log((">>>>check order: ", orderBy));
+		}`;
 
 		const res = await query(sql, []);
 
@@ -49,7 +50,6 @@ class Product {
 			const sql = "SELECT * FROM images_product WHERE idProduct = ?";
 			const params = [res[i].id];
 			res[i].images = await query(sql, params);
-			console.log("Image:  ", res[i].id, res[i].images);
 		}
 		// console.log(res);
 		return res;
@@ -63,11 +63,10 @@ class Product {
 		const prod = (await query(sql, [id]))[0];
 		const sql_image = "SELECT * FROM images_product WHERE idProduct = ?";
 		const img = await query(sql_image, [id]);
-		const review_sql = "SELECT * FROM reviews WHERE IDproduct = ?";
-		const review = await query(review_sql, [id]);
+		// const review_sql = "SELECT * FROM reviews WHERE IDproduct = ?";
+		// const review = await this.getReviews(id);
 		prod.images = [...img];
-		prod.reviews = [...review];
-
+		// prod.reviews = [...review];
 		return new Product(prod);
 	}
 	static async findByIdAndUpdate(id, product) {
@@ -93,14 +92,22 @@ class Product {
 		];
 		return await query(sqlUpdate, params);
 	}
-	static async getReviews(id) {
-		const sql = "SELECT * FROM reviews WHERE idProduct = ?";
-		const params = [id];
+	static async getReviews({ id, take, skip }) {
+		const sqlCount =
+			"SELECT COUNT(*) AS total FROM reviews WHERE idProduct = ? ";
+		const total = (await query(sqlCount, [id]))[0].total;
+		const sql =
+			"SELECT * FROM reviews WHERE idProduct = ? ORDER BY id DESC LIMIT ? OFFSET ? ";
+		const params = [id, take, skip];
 		const reviews = await query(sql, params);
-		return reviews;
+		for (const rev of reviews) {
+			const user = await User.findById(rev.idUser);
+			rev.user = user;
+		}
+		return { reviews, total };
 	}
 	static async deleteReview(id) {
-		const sql = "DELETE FROM reviews WHERE id =?";
+		const sql = "DELETE FROM reviews WHERE id = ?";
 		const params = [id];
 		return await query(sql, params);
 	}
@@ -144,38 +151,11 @@ class Product {
 		return await query(sql, params);
 	}
 
-	async updateReview(idProduct, review, numOfRevs, ratings) {
+	async updateReview(idProduct, numOfRevs, ratings) {
 		const product = await query(
 			"UPDATE products SET numOfRev = ?, ratings = ?  WHERE id = ?",
 			[numOfRevs, ratings, idProduct],
 		);
-
-		if (!review) return product;
-		const revInDB = await query(
-			"SELECT * FROM reviews WHERE idProduct = ? AND idUser = ? ",
-			[idProduct, review.userId],
-		);
-		if (revInDB.length > 0) {
-			const sql =
-				"UPDATE reviews SET comment = ? AND rating = ?  WHERE idProduct =? AND idUser = ?";
-			const params = [
-				review.comment,
-				review.rating,
-				idProduct,
-				review.userId,
-			];
-			return await query(sql, params);
-		} else {
-			const sql =
-				"INSERT INTO reviews (idProduct, idUser, comment, rating) VALUES (?,?, ?, ?)";
-			const params = [
-				idProduct,
-				review.userId,
-				review.comment,
-				review.rating,
-			];
-			return await query(sql, params);
-		}
 	}
 	static async deleteProduct(id) {
 		const prod = await query("SELECT * FROM products WHERE id = ?", [id]);

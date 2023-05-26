@@ -30,7 +30,7 @@ router.post("/product/image", upload.single("file"), add_image);
 router.get("/product/:id/image/", getImages);
 router.delete("/product/image/:id", removeImage);
 
-router.get("/reviews", isAuthenticatedUser, getReviews);
+router.get("/reviews/:id", isAuthenticatedUser, getReviews);
 router.post("/review", isAuthenticatedUser, createReview);
 router.delete(
 	"/review",

@@ -75,6 +75,7 @@ class APIFeatures {
 		}
 
 		this.query = copyQuery;
+		this.total = copyQuery.length;
 		return this;
 	}
 

@@ -27,12 +27,16 @@ exports.add_image = catchAsyncError(async function (req, res) {
 //  get all products => /api/v1/products
 exports.getProducts = catchAsyncError(async function (req, res) {
 	const take = Number(req.query.take) || 10;
+	const skip = Number(req.query.skip) || 0;
 	const page = Number(req.query.page) || 1;
-	const productsCount = await Product.countDocuments();
+
 	const orderBy = req.query.orderBy;
 	const array = orderBy.slice(1, orderBy.length - 1).split(",");
 
-	const products = new APIFeatures(await Product.findAll(array), req.query)
+	const products = new APIFeatures(
+		await Product.findAll({ orderBy: array, take, skip }),
+		req.query,
+	)
 		.search()
 		.filter()
 		.pagination(take);
@@ -40,7 +44,7 @@ exports.getProducts = catchAsyncError(async function (req, res) {
 		status: "success",
 		take,
 		page,
-		total: productsCount[0]["COUNT(*)"],
+		total: products.total,
 		products: products.query,
 	});
 });
@@ -86,7 +90,7 @@ exports.getSingleProduct = catchAsyncError(async function (req, res, next) {
 
 exports.updateProduct = catchAsyncError(async function (req, res) {
 	const product = await Product.findByIdAndUpdate(req.params.id, req.body);
-	console.log(product);
+	// console.log(product);
 	if (!product) {
 		return res.status(404).json({
 			status: "error",
@@ -121,35 +125,52 @@ exports.createReview = catchAsyncError(async function (req, res, next) {
 
 	const review = {
 		userId: req.user.id,
-		name: req.user.name,
 		rating: Number(rating),
 		comment,
 	};
 
 	const product = await Product.findById(productId);
 
-	const isReviewed = product.reviews.find((r) => r.userId === req.user.id);
+	const isReviewed = product.reviews.find((r) => r.idUser === req.user.id);
 
 	if (isReviewed) {
 		product.reviews.forEach((rev) => {
-			if (rev.userId === req.user.id) {
+			if (rev.idUser === req.user.id) {
 				rev.comment = comment;
 				rev.rating = Number(rating);
 			}
 		});
+		const sql =
+			"UPDATE reviews SET comment = ?, rating = ?  WHERE idProduct =? AND idUser = ?";
+		const params = [
+			review.comment,
+			review.rating,
+			product.id,
+			review.userId,
+		];
+		await query(sql, params);
 	} else {
 		product.reviews.push(review);
-		product.numOfReviews = product.reviews.length;
+		product.numOfRev += 1;
+		const sql =
+			"INSERT INTO reviews (idProduct, idUser, comment, rating) VALUES (?,?, ?, ?)";
+		const params = [
+			product.id,
+			review.userId,
+			review.comment,
+			review.rating,
+		];
+		await query(sql, params);
 	}
 
 	product.ratings =
 		product.reviews.reduce((acc, item) => item.rating + acc, 0) /
-		product.reviews.length;
+		product.numOfRev;
 
 	await product.updateReview(
 		productId,
-		review,
-		product.reviews.length,
+
+		product.numOfRev,
 		product.ratings,
 	);
 
@@ -160,11 +181,17 @@ exports.createReview = catchAsyncError(async function (req, res, next) {
 });
 
 // get product reviews => api/v1/reviews
-exports.getReviews = catchAsyncError(async function (req, res, next) {
-	const reviews = await Product.getReviews(req.query.id);
+exports.getReviews = catchAsyncError(async function (req, res) {
+	const { take = 5, skip = 0 } = req.query;
+	const { reviews, total } = await Product.getReviews({
+		id: req.params.id,
+		take,
+		skip,
+	});
 	res.status(200).json({
 		status: "success",
 		reviews: reviews,
+		total,
 	});
 });
 

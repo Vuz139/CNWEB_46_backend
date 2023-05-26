@@ -16,7 +16,6 @@ exports.isAuthenticatedUser = catchErrors(async (req, res, next) => {
 			new ErrorHandler("Login first to access this resource.", 401),
 		);
 	}
-	console.log("token", token);
 
 	// get userId by token
 	try {
@@ -25,7 +24,7 @@ exports.isAuthenticatedUser = catchErrors(async (req, res, next) => {
 		next();
 	} catch (err) {
 		console.log(err);
-		res.send(err);
+		return next(new ErrorHandler("Token not valid", 401));
 	}
 });
 
