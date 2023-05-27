@@ -3,6 +3,7 @@ const catchAsyncError = require("../middlewares/catchAsyncErrors");
 const { query } = require("../db/database");
 const Product = require("../models/product.model");
 const User = require("../models/user.model");
+const APIFeatures = require("../utils/apifeature");
 exports.createOrder = catchAsyncError(async (req, res, next) => {
 	// const {
 	//     orderItems,
@@ -28,6 +29,23 @@ exports.createOrder = catchAsyncError(async (req, res, next) => {
 			err,
 		});
 	}
+});
+
+exports.getUserOrders = catchAsyncError(async (req, res) => {
+	const user = req.user;
+	const { take = 10 } = req.query;
+	const sql = "SELECT * FROM orders WHERE idUser = ? ORDER BY id DESC";
+	try {
+		const orders = new APIFeatures(
+			await query(sql, [user.id]),
+			req.query,
+		).pagination(take);
+		console.log(orders);
+		res.status(200).json({
+			status: "success",
+			data: orders.query,
+		});
+	} catch (error) {}
 });
 
 // get Order by id
@@ -88,7 +106,7 @@ exports.deleteOrder = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getOrders = catchAsyncError(async (req, res, next) => {
-	console.log(req.query);
+	// console.log(req.query);
 	const { skip = 0, take = 10, status = "%%" } = req.query;
 	const newStatus = `%${status}%`;
 

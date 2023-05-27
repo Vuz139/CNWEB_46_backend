@@ -112,16 +112,16 @@ function createShippingInfo(opt) {
 }
 function createOrder(opt) {
 	const sql = `CREATE TABLE orders (
-        id INT NOT NULL AUTO_INCREMENT,
+        id INT(11) NOT NULL AUTO_INCREMENT,
         idUser INT,
         idShippingInfo INT,
-        paymentInfo ENUM('pending', 'fullfiled'),
+        paymentInfo VARCHAR(255),
         itemsPrice DECIMAL(13, 2),
         taxPrice DECIMAL(13, 2),
         shippingPrice DECIMAL(13, 2),
         totalPrice DECIMAL(13, 2),
         paidAt DATETIME,
-        orderStatus ENUM('pending', 'processing', 'fullfiled', 'cancelled'),
+        orderStatus VARCHAR(255),
         deliveredAt DATETIME,
         createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id),
