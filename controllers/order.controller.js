@@ -33,17 +33,22 @@ exports.createOrder = catchAsyncError(async (req, res, next) => {
 
 exports.getUserOrders = catchAsyncError(async (req, res) => {
 	const user = req.user;
-	const { take = 10 } = req.query;
-	const sql = "SELECT * FROM orders WHERE idUser = ? ORDER BY id DESC";
+	const { take = 10, orderStatus = "" } = req.query;
+	const status = `%${orderStatus}%`;
+	const sql =
+		"SELECT * FROM orders WHERE idUser = ? AND orderStatus LIKE ? ORDER BY id DESC";
 	try {
 		const orders = new APIFeatures(
-			await query(sql, [user.id]),
+			await query(sql, [user.id, status]),
 			req.query,
-		).pagination(take);
-		console.log(orders);
+		)
+			.filter()
+			.pagination(take);
+
 		res.status(200).json({
 			status: "success",
 			data: orders.query,
+			total: orders.total,
 		});
 	} catch (error) {}
 });
@@ -62,12 +67,14 @@ exports.getOrderById = catchAsyncError(async (req, res) => {
 		order.products = [];
 		for (let i = 0; i < items.length; i++) {
 			const product = await Product.findById(items[i].idProduct);
-			order.products.push(product);
+			order.products.push({ ...product, amount: items[i].amount });
 		}
 
 		const sqlShipping = "SELECT * FROM shipping_info  WHERE id = ?";
 
-		order.shipping_info = await query(sqlShipping, [order.idShippingInfo]);
+		order.shipping_info = (
+			await query(sqlShipping, [order.idShippingInfo])
+		)[0];
 		const user = await User.findById(order.idUser);
 		order.user = user;
 		res.status(200).json({
@@ -93,7 +100,11 @@ exports.updateOrder = catchAsyncError(async (req, res, next) => {
 			[],
 		);
 	}
-	res.send(await query("SELECT * FROM orders WHERE id = ?", [id]));
+	const updateOrder = await query("SELECT * FROM orders WHERE id = ?", [id]);
+	res.status(200).json({
+		status: "success",
+		data: updateOrder[0],
+	});
 });
 
 exports.deleteOrder = catchAsyncError(async (req, res, next) => {
@@ -119,7 +130,7 @@ exports.getOrders = catchAsyncError(async (req, res, next) => {
 			[newStatus],
 		)
 	)[0].total;
-	console.log(total);
+
 	res.status(200).json({
 		status: "success",
 		data,
