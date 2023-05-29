@@ -12,7 +12,7 @@ const {
 } = require("../controllers/order.controller");
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
 
-router.get("/orders", isAuthenticatedUser, getOrders);
+router.get("/orders", isAuthenticatedUser, authorizeRoles("admin"), getOrders);
 router.post("/order", isAuthenticatedUser, createOrder);
 router.put("/order/:id", isAuthenticatedUser, updateOrder);
 router.get("/order/:id", isAuthenticatedUser, getOrderById);

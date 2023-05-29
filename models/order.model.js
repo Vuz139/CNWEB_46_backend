@@ -62,7 +62,7 @@ class Order {
 		for (const item of this.itemsOrder) {
 			const sql_orderItem =
 				"INSERT INTO itemorder (idOrder, idProduct, amount) VALUES (?,?,?)";
-			const params_orderItem = [this.id, item.idProduct, item.amount];
+			const params_orderItem = [this.id, item.id, item.amount];
 			await query(sql_orderItem, params_orderItem);
 		}
 
