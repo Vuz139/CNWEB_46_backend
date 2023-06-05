@@ -8,11 +8,10 @@ const {
 	getUserProfile,
 	updatePassword,
 	updateUserProfile,
-	logoutUser,
+	// logoutUser,
 	getUsers,
 	getUserById,
 	deleteUserById,
-	updateUserProfileById,
 	updateAvatar,
 	updateUser,
 } = require("../controllers/user.controller");
@@ -31,12 +30,12 @@ router.post("/user/login", loginUser);
 router.get("/me", isAuthenticatedUser, getUserProfile);
 router.put("/password/update", isAuthenticatedUser, updatePassword);
 router.post("/me/update", isAuthenticatedUser, updateUserProfile);
-router.get("/logout", isAuthenticatedUser, logoutUser);
+// router.get("/logout", isAuthenticatedUser, logoutUser);
 
 router.get(
 	"/admin/users",
-	// isAuthenticatedUser,
-	// authorizeRoles("admin"),
+	isAuthenticatedUser,
+	authorizeRoles("admin"),
 	getUsers,
 );
 router.get(
@@ -54,8 +53,8 @@ router.delete(
 );
 router.put(
 	"/admin/user/:id",
-	// isAuthenticatedUser,
-	// authorizeRoles("admin"),
+	isAuthenticatedUser,
+	authorizeRoles("admin"),
 	updateUser,
 );
 

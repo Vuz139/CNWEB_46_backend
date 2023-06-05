@@ -10,3 +10,6 @@ Copy file .env.example to .env
 -- cài đặt kết nối với database mysql
 -- chạy lệnh: npm run migration để cài đặt table lên database
 -- kiểm tra databases xem các bảng đã lên đủ chưa.
+
+--------Khởi chạy back-end server:
+-- Vào terminal, dẫn đến thư mục back-end, chạy lệnh: npm run dev

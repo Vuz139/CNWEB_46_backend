@@ -103,18 +103,18 @@ exports.updateUserProfile = catchAsyncErrors(async (req, res, next) => {
 	});
 });
 
-// logout user => /api/v1/logout
-exports.logoutUser = catchAsyncErrors(async (req, res) => {
-	res.cookie("token", "none", {
-		expires: new Date(Date.now() + 10 * 1000),
-		httpOnly: true,
-	});
+// // logout user => /api/v1/logout
+// exports.logoutUser = catchAsyncErrors(async (req, res) => {
+// 	res.cookie("token", "none", {
+// 		expires: new Date(Date.now() + 10 * 1000),
+// 		httpOnly: true,
+// 	});
 
-	res.status(200).json({
-		status: "success",
-		message: "Logged out successfully",
-	});
-});
+// 	res.status(200).json({
+// 		status: "success",
+// 		message: "Logged out successfully",
+// 	});
+// });
 
 // admin routers
 //  get all users => api/v1/admin/users
