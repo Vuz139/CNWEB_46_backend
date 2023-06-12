@@ -133,8 +133,8 @@ class User {
 	}
 
 	getJwtToken() {
-		return jwt.sign({ id: this.id }, process.env.JWT_SECRET, {
-			expiresIn: process.env.JWT_EXPIRES_IN,
+		return jwt.sign({ id: this.id }, process.env.JWT_SECRET || "abcdef", {
+			expiresIn: process.env.JWT_EXPIRES_IN || "7d",
 		});
 	}
 }

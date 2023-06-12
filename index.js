@@ -6,6 +6,19 @@ const cors = require("cors");
 require("dotenv").config();
 const app = express();
 
+const products = [
+	{ id: 1, name: 'Product 1' },
+	{ id: 2, name: 'Product 2' },
+	{ id: 3, name: 'Product 3' },
+	{ id: 4, name: 'Product 4' }
+  ];
+  
+  // Định nghĩa route API để lấy 4 sản phẩm
+app.get('/api/products', (req, res) => {
+	const fourProducts = products.slice(0, 4);
+	res.json(fourProducts);
+  });
+  
 app.use(express.static("uploads"));
 
 app.use(express.json());

@@ -22,6 +22,7 @@ exports.register = async (req, res, next) => {
 // login a user => api/v1/user/login
 exports.loginUser = catchAsyncErrors(async (req, res, next) => {
 	const { email, password } = req.body;
+	
 	// check if email and password are entered by user
 	if (!email || !password) {
 		return next(new ErrorHandler("Please provide email and password", 400));
@@ -29,6 +30,7 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
 	// check if user exists
 	try {
 		const user = await User.findByEmail(email);
+		console.log(user);
 		if (!user) {
 			return next(new ErrorHandler("Invalid email or password", 401));
 		}
