@@ -24,7 +24,7 @@ exports.isAuthenticatedUser = catchErrors(async (req, res, next) => {
 		next();
 	} catch (err) {
 		console.log(err);
-		return next(new ErrorHandler("Token not valid", 401));
+		return next(new ErrorHandler("Token not valid", 402));
 	}
 });
 

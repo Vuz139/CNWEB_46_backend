@@ -122,7 +122,7 @@ exports.getOrders = catchAsyncError(async (req, res, next) => {
 	const newStatus = `%${status}%`;
 
 	const sql =
-		"SELECT * FROM orders INNER JOIN shipping_info sp ON orders.idShippingInfo = sp.id WHERE orders.orderStatus LIKE ? ORDER BY orderStatus ASC LIMIT ? OFFSET ? ";
+		"SELECT * FROM orders INNER JOIN shipping_info sp ON orders.idShippingInfo = sp.id WHERE orders.orderStatus LIKE ? ORDER BY orders.id DESC LIMIT ? OFFSET ? ";
 	const data = await query(sql, [newStatus, take, skip]);
 	const total = (
 		await query(
