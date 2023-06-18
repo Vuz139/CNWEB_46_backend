@@ -44,6 +44,18 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
 		return next(new ErrorHandler("Invalid email or password", 401));
 	}
 });
+// refresh token => api/v1/refresh-token
+exports.refreshToken = catchAsyncErrors(async (req, res, next) => {
+	const user = req.user;
+	console.log(user);
+	// check if user exists
+	try {
+		delete user.password;
+		sendToken(user, 200, res);
+	} catch (err) {
+		return next(new ErrorHandler("Invalid email or password", 401));
+	}
+});
 
 // add avatar user
 exports.updateAvatar = catchAsyncErrors(async (req, res) => {
@@ -102,19 +114,6 @@ exports.updateUserProfile = catchAsyncErrors(async (req, res, next) => {
 		user,
 	});
 });
-
-// // logout user => /api/v1/logout
-// exports.logoutUser = catchAsyncErrors(async (req, res) => {
-// 	res.cookie("token", "none", {
-// 		expires: new Date(Date.now() + 10 * 1000),
-// 		httpOnly: true,
-// 	});
-
-// 	res.status(200).json({
-// 		status: "success",
-// 		message: "Logged out successfully",
-// 	});
-// });
 
 // admin routers
 //  get all users => api/v1/admin/users

@@ -8,7 +8,7 @@ const {
 	getUserProfile,
 	updatePassword,
 	updateUserProfile,
-	// logoutUser,
+	refreshToken,
 	getUsers,
 	getUserById,
 	deleteUserById,
@@ -26,6 +26,7 @@ router.post(
 	updateAvatar,
 );
 router.post("/user/login", loginUser);
+router.get("/refresh-token", isAuthenticatedUser, refreshToken);
 
 router.get("/me", isAuthenticatedUser, getUserProfile);
 router.put("/password/update", isAuthenticatedUser, updatePassword);
