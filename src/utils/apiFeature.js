@@ -35,7 +35,7 @@ class APIFeatures {
 		const removeFields = ["keyword", "limit", "take", "page", "orderBy"];
 		removeFields.forEach((param) => delete queryCopy[param]);
 		let copyQuery = [...this.query];
-		console.log(("queryCopy", queryCopy));
+		// console.log(("queryCopy", queryCopy));
 		// console.log("copyQuery", copyQuery);
 
 		for (let index = 0; index < copyQuery.length; index++) {

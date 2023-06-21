@@ -1,6 +1,5 @@
 const { query } = require("../db/database");
 const ErrorHandler = require("../utils/errorHandler");
-const APIFeatures = require("../utils/apifeature");
 
 class Order {
 	constructor(order) {
@@ -61,7 +60,7 @@ class Order {
 		// insert item order
 		for (const item of this.itemsOrder) {
 			const sql_orderItem =
-				"INSERT INTO itemorder (idOrder, idProduct, amount) VALUES (?,?,?)";
+				"INSERT INTO itemOrder (idOrder, idProduct, amount) VALUES (?,?,?)";
 			const params_orderItem = [this.id, item.id, item.amount];
 			await query(sql_orderItem, params_orderItem);
 		}

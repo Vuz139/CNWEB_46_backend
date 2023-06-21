@@ -30,12 +30,11 @@ class User {
 			// cập nhật email, name, ...
 
 			const sql =
-				"UPDATE users SET name =?, email =?, role = ?, avatar = ? WHERE id =?";
+				"UPDATE users SET name =?, email =?, role = ? WHERE id =?";
 			const params = [
 				this.name || currProile.name,
 				this.email || currProile.email,
 				this.role,
-				this.avatar || currProile.avatar,
 				this.id,
 			];
 			const res = await query(sql, params);
@@ -108,7 +107,7 @@ class User {
 		keyword = "",
 	}) {
 		const search = `%${keyword.trim().replace(/ +/g, "%")}%`;
-		console.log(">>>search: ", search);
+		// console.log(">>>search: ", search);
 		const sql = `SELECT * FROM users
 					WHERE (role LIKE ? OR name LIKE ?)
 					ORDER BY ${orderBy[0]} ${orderBy[1]} 

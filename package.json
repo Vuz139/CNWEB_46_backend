@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "SET NODE_ENV=DEVELOPMENT& nodemon index",
-    "prod": "SET NODE_ENV=PRODUCTION& nodemon index",
-    "migration": "node utils/migrations.js",
+    "dev": "SET NODE_ENV=DEVELOPMENT& nodemon src/index",
+    "prod": "SET NODE_ENV=PRODUCTION& nodemon src/index",
+    "migration": "node src/utils/migrations.js",
+    "build": "babel src -d dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

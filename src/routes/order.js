@@ -10,7 +10,7 @@ const {
 	getOrderById,
 	getUserOrders,
 } = require("../controllers/order.controller");
-const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
+const { isAuthenticatedUser, authorizeRoles } = require("../middleWares/auth");
 
 router.get("/orders", isAuthenticatedUser, authorizeRoles("admin"), getOrders);
 router.post("/order", isAuthenticatedUser, createOrder);

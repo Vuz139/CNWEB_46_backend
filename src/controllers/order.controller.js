@@ -1,9 +1,9 @@
 const Order = require("../models/order.model");
-const catchAsyncError = require("../middlewares/catchAsyncErrors");
+const catchAsyncError = require("../middleWares/catchAsyncErrors");
 const { query } = require("../db/database");
 const Product = require("../models/product.model");
 const User = require("../models/user.model");
-const APIFeatures = require("../utils/apifeature");
+const APIFeatures = require("../utils/apiFeature");
 exports.createOrder = catchAsyncError(async (req, res, next) => {
 	// const {
 	//     orderItems,
@@ -61,7 +61,7 @@ exports.getOrderById = catchAsyncError(async (req, res) => {
 		const params = [orderId];
 		const order = (await query(sql, params))[0];
 
-		const sqlItem = "SELECT * FROM itemorder WHERE idOrder = ?";
+		const sqlItem = "SELECT * FROM itemOrder WHERE idOrder = ?";
 		const items = await query(sqlItem, params);
 
 		order.products = [];

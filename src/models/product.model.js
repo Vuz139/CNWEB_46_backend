@@ -1,7 +1,6 @@
 const { query } = require("../db/database");
 const fs = require("fs");
 const path = require("path");
-const { join, dirname } = require("path");
 const User = require("./user.model");
 class Product {
 	constructor(product) {
@@ -39,7 +38,7 @@ class Product {
 		result(seeder);
 	}
 	static async findAll({ orderBy = null, take = 10, skip = 0 }) {
-		console.log((">>>>check order: ", orderBy));
+		// console.log((">>>>check order: ", orderBy));
 		const sql = `SELECT * FROM products ${
 			orderBy ? `ORDER BY ${orderBy[0]} ${orderBy[1]}` : ""
 		}`;
@@ -63,10 +62,9 @@ class Product {
 		const prod = (await query(sql, [id]))[0];
 		const sql_image = "SELECT * FROM images_product WHERE idProduct = ?";
 		const img = await query(sql_image, [id]);
-		// const review_sql = "SELECT * FROM reviews WHERE IDproduct = ?";
-		// const review = await this.getReviews(id);
+
 		prod.images = [...img];
-		// prod.reviews = [...review];
+
 		return new Product(prod);
 	}
 	static async findByIdAndUpdate(id, product) {

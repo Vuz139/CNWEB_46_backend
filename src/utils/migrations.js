@@ -1,4 +1,3 @@
-const colors = require("colors");
 const { query } = require("../db/database");
 
 function createdUser(opt) {

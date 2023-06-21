@@ -1,6 +1,6 @@
 const express = require("express");
 require("express-async-errors");
-const middleError = require("./middlewares/errors");
+const middleError = require("./middleWares/errors");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 require("dotenv").config();

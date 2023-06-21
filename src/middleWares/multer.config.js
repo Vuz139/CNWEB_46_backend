@@ -3,7 +3,7 @@ const path = require("path");
 
 // Create a storage instance with the desired configuration
 const storage = multer.diskStorage({
-	destination: path.join(path.dirname(__dirname), "uploads/"), // Specify the destination folder
+	destination: path.join(path.dirname(path.dirname(__dirname)), "uploads/"), // Specify the destination folder
 	filename: function (req, file, cb) {
 		const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
 		// Use the original name of the uploaded file along with a unique suffix

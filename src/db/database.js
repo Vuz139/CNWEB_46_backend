@@ -25,7 +25,6 @@ dbconnection.on("connection", function (connection) {
 });
 
 async function query(sql, params) {
-	console.log(sql.green, params || "");
 	try {
 		const [row] = await dbconnection.execute(sql, params);
 		return row;
@@ -33,23 +32,6 @@ async function query(sql, params) {
 		console.log(error);
 		throw error;
 	}
-
-	// const connection = await mysql.createConnection({
-	// 	...connectInfo,
-	// 	namedPlaceholders: true,
-	// });
-	// await connection.connect();
-
-	// console.log("\nconnection established\n".green);
-	// try {
-	// 	const [rows] = await connection.execute(sql, params);
-	// 	return rows;
-	// } catch (err) {
-	// 	console.log(err);
-	// 	throw err;
-	// } finally {
-	// 	await connection.end();
-	// }
 }
 
 module.exports = {

@@ -1,10 +1,10 @@
 const Product = require("../models/product.model");
 const APIFeatures = require("../utils/apiFeature");
-const catchAsyncError = require("../middleWares/catchAsyncErrors");
+const catchAsyncErrors = require("../middleWares/catchAsyncErrors");
 const { query } = require("../db/database");
 
 // create a new Product => api/v1/product/create
-exports.create_product = catchAsyncError(async function (req, res) {
+exports.create_product = catchAsyncErrors(async function (req, res) {
 	await Product.create(req.body, function (product) {
 		res.status(200).json({
 			status: "success",
@@ -12,7 +12,7 @@ exports.create_product = catchAsyncError(async function (req, res) {
 		});
 	});
 });
-exports.add_image = catchAsyncError(async function (req, res) {
+exports.add_image = catchAsyncErrors(async function (req, res) {
 	const product = await Product.findById(req.query.productId);
 
 	if (!product.id) {
@@ -21,11 +21,12 @@ exports.add_image = catchAsyncError(async function (req, res) {
 			message: "Product not found",
 		});
 	}
+	console.log(">>>file: ", req.file.filename);
 	res.send(await product.addImage(req.file.filename));
 });
 
 //  get all products => /api/v1/products
-exports.getProducts = catchAsyncError(async function (req, res) {
+exports.getProducts = catchAsyncErrors(async function (req, res) {
 	const take = Number(req.query.take) || 10;
 	const skip = Number(req.query.skip) || 0;
 	const page = Number(req.query.page) || 1;
@@ -49,7 +50,7 @@ exports.getProducts = catchAsyncError(async function (req, res) {
 	});
 });
 
-exports.getProductTop = catchAsyncError(async function (req, res) {
+exports.getProductTop = catchAsyncErrors(async function (req, res, next) {
 	const sqlCategory = "SELECT category FROM products GROUP BY category";
 	const category = (await query(sqlCategory, [])).map(
 		(category) => category.category,
@@ -59,7 +60,6 @@ exports.getProductTop = catchAsyncError(async function (req, res) {
 
 	const sqlSeller = "SELECT seller from products group by seller";
 	const seller = (await query(sqlSeller, [])).map((seller) => seller.seller);
-
 	res.status(200).json({
 		status: "success",
 		data: {
@@ -71,7 +71,7 @@ exports.getProductTop = catchAsyncError(async function (req, res) {
 });
 
 // get single product => /api/v1/product/:id
-exports.getSingleProduct = catchAsyncError(async function (req, res, next) {
+exports.getSingleProduct = catchAsyncErrors(async function (req, res, next) {
 	const product = await Product.findById(req.params.id);
 	// console.log(product);
 	if (!product) {
@@ -88,7 +88,7 @@ exports.getSingleProduct = catchAsyncError(async function (req, res, next) {
 
 // update product => /api/v1/admin/product/:id
 
-exports.updateProduct = catchAsyncError(async function (req, res) {
+exports.updateProduct = catchAsyncErrors(async function (req, res) {
 	const product = await Product.findByIdAndUpdate(req.params.id, req.body);
 	// console.log(product);
 	if (!product) {
@@ -120,7 +120,7 @@ exports.deleteProduct = async function (req, res) {
 };
 
 // create a new review Product => /api/v1/review
-exports.createReview = catchAsyncError(async function (req, res, next) {
+exports.createReview = catchAsyncErrors(async function (req, res, next) {
 	const { rating, comment, productId } = req.body;
 
 	const review = {
@@ -181,7 +181,7 @@ exports.createReview = catchAsyncError(async function (req, res, next) {
 });
 
 // get product reviews => api/v1/reviews
-exports.getReviews = catchAsyncError(async function (req, res) {
+exports.getReviews = catchAsyncErrors(async function (req, res) {
 	const { take = 5, skip = 0 } = req.query;
 	const { reviews, total } = await Product.getReviews({
 		id: req.params.id,
@@ -196,7 +196,7 @@ exports.getReviews = catchAsyncError(async function (req, res) {
 });
 
 // delete product review => api/v1/review
-exports.deleteReview = catchAsyncError(async function (req, res) {
+exports.deleteReview = catchAsyncErrors(async function (req, res) {
 	const product = await Product.findById(req.query.idProduct);
 
 	const reviews = product.reviews.filter(
