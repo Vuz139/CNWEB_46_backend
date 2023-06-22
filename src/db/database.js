@@ -3,10 +3,10 @@ const colors = require("colors");
 require("dotenv").config();
 
 const connectInfo = {
-	host: process.env.HOST || "localhost",
-	user: process.env.USER || "root",
-	password: process.env.PASSWORD || "",
-	database: process.env.DATABASE || "cnweb46",
+	host: process.env.HOST,
+	user: process.env.USER,
+	password: process.env.PASSWORD,
+	database: process.env.DATABASE,
 	connectionLimit: 10, //mysql connection pool length
 };
 

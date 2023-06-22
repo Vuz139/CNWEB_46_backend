@@ -32,22 +32,39 @@ exports.getProducts = catchAsyncErrors(async function (req, res) {
 	const page = Number(req.query.page) || 1;
 
 	const orderBy = req.query.orderBy;
-	const array = orderBy.slice(1, orderBy.length - 1).split(",");
+	if (orderBy) {
+		const array = orderBy.slice(1, orderBy.length - 1).split(",");
 
-	const products = new APIFeatures(
-		await Product.findAll({ orderBy: array, take, skip }),
-		req.query,
-	)
-		.search()
-		.filter()
-		.pagination(take);
-	res.status(200).json({
-		status: "success",
-		take,
-		page,
-		total: products.total,
-		products: products.query,
-	});
+		const products = new APIFeatures(
+			await Product.findAll({ orderBy: array, take, skip }),
+			req.query,
+		)
+			.search()
+			.filter()
+			.pagination(take);
+		res.status(200).json({
+			status: "success",
+			take,
+			page,
+			total: products.total,
+			products: products.query,
+		});
+	} else {
+		const products = new APIFeatures(
+			await Product.findAll({ take, skip }),
+			req.query,
+		)
+			.search()
+			.filter()
+			.pagination(take);
+		res.status(200).json({
+			status: "success",
+			take,
+			page,
+			total: products.total,
+			products: products.query,
+		});
+	}
 });
 
 exports.getProductTop = catchAsyncErrors(async function (req, res, next) {
